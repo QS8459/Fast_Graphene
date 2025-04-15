@@ -7,7 +7,10 @@ from sqlalchemy.exc import (
 from sqlalchemy.future import select
 from typing import Generic, TypeVar, Type
 from abc import ABC, abstractmethod
-from fastapi import HTTPException
+from fastapi import (
+    HTTPException,
+    status
+)
 from src.conf.log import logger
 
 T = TypeVar("T")
@@ -29,14 +32,15 @@ class ServiceBase(ABC, Generic[T]):
             return result
         except IntegrityError as e:
             logger.error("Integrity Error")
-            raise SQLAlchemyError(
-                code=500,
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Integrity Error",
             )
         except SQLAlchemyError as e:
-            logger.error(f"SQLAlchemyError, {e}")
+            logger.error(f"SQLAlchemyError")
             raise HTTPException(
-                detail=f"SQLAlchemyError,{e}",
-                status_code=500
+                detail=f"SQLAlchemyError",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
     async def _exec(self, caller, fetch_one=False, refresh=False, *args, **kwargs):

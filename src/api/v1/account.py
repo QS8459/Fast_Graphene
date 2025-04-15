@@ -4,7 +4,6 @@ from src.conf.di import di
 from src.conf.log import logger
 from src.core.service.authentication import generate_token
 from src.conf.settings import settings
-from src.api.v1.token import TokenBaseGraph
 from src.core.interface import BaseInterface
 
 
@@ -51,7 +50,7 @@ class AccountInput(graphene.InputObjectType):
     password = graphene.String(required=True)
 
 
-class AddAccount(graphene.Mutation):
+class SignUp(graphene.Mutation):
 
     class Arguments:
         account_data = AccountInput(required=True)
@@ -68,7 +67,7 @@ class AddAccount(graphene.Mutation):
         new_account = await service.add(
             **account_data
         )
-        return AddAccount(
+        return SignUp(
             account=AccountBaseGraph(
                 guid=new_account.guid,
                 email=new_account.email
@@ -80,8 +79,6 @@ class VerifyUser(graphene.Mutation):
 
     class Arguments:
         account_data = AccountInput(required=True)
-
-    token = graphene.Field(TokenBaseGraph)
 
     async def mutate(
             root,

@@ -18,8 +18,14 @@ from src.db.engine import AsyncSession, get_session
 from fastapi.middleware.cors import CORSMiddleware
 from src.conf.log import logger
 from src.conf.settings import settings
-from src.conf.middleware import provide_session
-from src.api import schema
+from src.conf.middleware import (
+    provide_session,
+    authentication_middleware
+)
+from src.api import (
+    schema,
+    api
+)
 
 
 @asynccontextmanager
@@ -48,6 +54,7 @@ app.add_middleware(
 )
 
 # app.middleware("http")(provide_session)
+app.middleware('http')(authentication_middleware)
 
 
 @app.get('/')
@@ -57,12 +64,14 @@ async def home():
         status_code=status.HTTP_200_OK
     )
 
+app.include_router(api)
 
 app.mount(
     '/graphql',
      GraphQLApp(
          schema=schema,
          # context=lambda: {"session": get_session()},
-         on_get=make_playground_handler(),
+         # on_get=make_playground_handler(),
+         on_get=make_graphiql_handler()
      )
 )

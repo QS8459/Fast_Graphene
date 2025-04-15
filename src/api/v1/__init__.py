@@ -1,17 +1,21 @@
 from src.conf.log import logger
+from src.api.v1.union_example import (
+    SearchResult,
+    mock_data
+)
 import graphene
 from src.api.v1.account import (
     AccountBaseGraph,
     AccountInput,
-    AddAccount,
+    SignUp,
     VerifyUser,
-    TokenBaseGraph
 )
 
 
 class Query(
     graphene.ObjectType,
 ):
+    result = graphene.Field(SearchResult)
     account = graphene.Field(
         AccountBaseGraph,
         resolver=AccountBaseGraph.resolve_account,
@@ -23,17 +27,17 @@ class Query(
         limit=graphene.Int(),
         resolver=AccountBaseGraph.resolve_account_list
     )
-    token = graphene.Field(
-        TokenBaseGraph
-    )
     hello = graphene.String(name=graphene.String())
 
     async def resolve_hello(root, info, name: str = "Name"):
         return f"Hello"+ name
 
+    async def resolve_result(_, info):
+        return mock_data
+
 
 class Mutation(graphene.ObjectType):
-    add_account = AddAccount.Field()
+    sign_up = SignUp.Field()
     verify_account = VerifyUser.Field()
 
 
