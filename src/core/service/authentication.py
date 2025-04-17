@@ -15,7 +15,7 @@ from src.conf.log import logger
 o2auth_scheme = OAuth2PasswordBearer(tokenUrl='/graphql', scheme_name="jwt")
 
 
-def generate_token(
+async def generate_token(
         data: dict,
         exp_time
 ):
