@@ -50,6 +50,11 @@ class AccountInput(graphene.InputObjectType):
     password = graphene.String(required=True)
 
 
+class TokenBaseGraph(graphene.ObjectType):
+    access_token = graphene.String()
+    refresh_token = graphene.String()
+
+
 class SignUp(graphene.Mutation):
 
     class Arguments:
@@ -75,20 +80,21 @@ class SignUp(graphene.Mutation):
         )
 
 
-class VerifyUser(graphene.Mutation):
+class VerifyUser(graphene.ObjectType):
+    access_token = graphene.String()
+    refresh_token = graphene.String()
 
-    class Arguments:
-        account_data = AccountInput(required=True)
-
-    async def mutate(
+    async def resolve_verify_user(
             root,
             info,
-            account_data,
+            email: str,
+            password: str,
             service: AccountService = di.resolve(AccountService)
     ):
+        logger.info("UserVerify called")
         user = await service.verify_account(
-            email=account_data.email,
-            password=account_data.password
+            email=email,
+            password=password
         )
         access_token = await generate_token(
             {
@@ -108,9 +114,8 @@ class VerifyUser(graphene.Mutation):
             refresh_token
         )
         return VerifyUser(
-            token=TokenBaseGraph(
                 access_token=access_token,
                 refresh_token=refresh_token
             )
-        )
+
 
