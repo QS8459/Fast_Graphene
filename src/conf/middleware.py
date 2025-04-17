@@ -47,6 +47,7 @@ async def authentication_middleware(
         else:
             result = await call_next(request)
     except Exception as e:
-        raise e
+        pass
+        # raise e
 
     return result
