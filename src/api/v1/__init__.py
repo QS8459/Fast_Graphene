@@ -28,7 +28,12 @@ class Query(
         resolver=AccountBaseGraph.resolve_account_list
     )
     hello = graphene.String(name=graphene.String())
-
+    verify_user = graphene.Field(
+        VerifyUser,
+        password=graphene.String(),
+        email=graphene.String(),
+        resolver=VerifyUser.resolve_verify_user
+    )
     async def resolve_hello(root, info, name: str = "Name"):
         return f"Hello"+ name
 
@@ -38,7 +43,6 @@ class Query(
 
 class Mutation(graphene.ObjectType):
     sign_up = SignUp.Field()
-    verify_account = VerifyUser.Field()
 
 
 

@@ -19,7 +19,7 @@ async def give_token(
     response: Response
 ):
     anonymous_user_uid = f"{str(uuid4())}"
-    token = generate_token(
+    token = await generate_token(
         {
             "guid": anonymous_user_uid,
         },
